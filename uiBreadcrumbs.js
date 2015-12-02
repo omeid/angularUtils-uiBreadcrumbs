@@ -58,7 +58,7 @@
                         while(currentState && currentState.name !== '') {
                             workingState = getWorkingState(currentState);
                             if (workingState) {
-                                displayName = getDisplayName(workingState);
+                                displayName = getDisplayName(workingState, currentState);
 
                                 if (displayName !== false && !stateAlreadyInBreadcrumbs(workingState, breadcrumbs)) {
                                     breadcrumbs.push({
@@ -103,9 +103,10 @@
                      * attribute and look up the corresponding property on the state's config object. The specified string can be interpolated against any resolved
                      * properties on the state config object, by using the usual {{ }} syntax.
                      * @param currentState
+                     * @param contextState
                      * @returns {*}
                      */
-                    function getDisplayName(currentState) {
+                    function getDisplayName(currentState, contextState) {
                         var interpolationContext;
                         var propertyReference;
                         var displayName;
@@ -121,9 +122,7 @@
                         } else if (typeof propertyReference === 'undefined') {
                             return currentState.name;
                         } else {
-                            // use the $interpolate service to handle any bindings in the propertyReference string.
-                            interpolationContext =  (typeof currentState.locals !== 'undefined') ? currentState.locals.globals : currentState;
-                            displayName = $interpolate(propertyReference)(interpolationContext);
+                            displayName = $interpolate(propertyReference)(contextState.locals.globals);
                             return displayName;
                         }
                     }
